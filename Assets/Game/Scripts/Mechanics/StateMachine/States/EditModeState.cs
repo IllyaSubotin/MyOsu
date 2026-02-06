@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EditModeState : State
@@ -8,14 +9,19 @@ public class EditModeState : State
     private StateMachine _stateMachine;
     private ISaveLoadManager _saveLoadManager;
     private IEditModeController _editModeController;
+    private IBackgroundImporter _backgroundImporter;
+    private IMusicImporter _musicImporter;
     private IAudioTimer _audioTimer;
 
     public EditModeState(EditModeScreen screen, StateMachine stateMachine, ISaveLoadManager saveLoadManager, 
-                            IEditModeController editModeController, IAudioTimer audioTimer)
+                            IEditModeController editModeController, IAudioTimer audioTimer, IBackgroundImporter backgroundImporter, 
+                                IMusicImporter musicImporter)
     {
         _screen = screen;
         _stateMachine = stateMachine;
+        _musicImporter = musicImporter;
         _saveLoadManager = saveLoadManager;
+        _backgroundImporter = backgroundImporter;
         _editModeController = editModeController;
         _audioTimer = audioTimer;
     }
@@ -23,7 +29,6 @@ public class EditModeState : State
     public override void Enter()
     {
         _screen.Show();
-        _audioTimer.StartTimer();
 
         _screen.stopButton.onClick.AddListener(() =>{ _audioTimer.PauseTimer();});
         _screen.playButton.onClick.AddListener(() =>{ _audioTimer.ResumeTimerForward();});
@@ -34,14 +39,24 @@ public class EditModeState : State
         _screen.saveButton.onClick.AddListener(() =>
         {
             BeatmapData beatmapData = _editModeController.beatmapDatas;
+            
+            beatmapData.nodeInfos = beatmapData.nodeInfos.OrderBy(n => n.spawnTime).ToList();
+
             _saveLoadManager.beatmapDatas.Add(new BeatmapData()
             {
                 beatmapID = beatmapData.beatmapID,
                 beatmapName = beatmapData.beatmapName,
-                nodeInfos = new List<NodeData>(beatmapData.nodeInfos)
+                nodeInfos = new List<NodeData>(beatmapData.nodeInfos),
+                audioPath = beatmapData.audioPath,
+                backgroundImagePath = beatmapData.backgroundImagePath,
+                
             });
+
             _saveLoadManager.mapStatisticsDatas.Add(new MapStatistics());
             _saveLoadManager.SaveGame();
+
+            _musicImporter.MusicPath = null;
+            _backgroundImporter.BackgroundPath = null;
         });
 
         _screen.exitButton.onClick.AddListener(() =>

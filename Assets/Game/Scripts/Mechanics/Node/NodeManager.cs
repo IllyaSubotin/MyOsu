@@ -50,7 +50,7 @@ public class NodeManager : MonoBehaviour, INodeManager
 
         if (nodeInfos.Count == 0) return;
 
-        if (nodeInfos[0].spawntime <= _audioTimer.audioTime + tolerance)
+        if (nodeInfos[0].spawnTime <= _audioTimer.audioTime + tolerance)
         {
             NodeData nodeInfo = nodeInfos[0];
             NodeView newNode = SpawnNode(nodeInfo);
@@ -85,7 +85,8 @@ public class NodeManager : MonoBehaviour, INodeManager
         
         node.gameObject.SetActive(true);    
         node.gameObject.transform.SetAsFirstSibling();
-        node.Initialize(approachTime, 1f, new Vector2((info.xPercent - 0.5f) * canvasRect.rect.width, (info.yPercent - 0.5f) * canvasRect.rect.height), info.spawntime); 
+        node.Initialize(approachTime, 1f, new Vector2((info.xPercent - 0.5f) * canvasRect.rect.width, 
+                                                        (info.yPercent - 0.5f) * canvasRect.rect.height), info.spawnTime); 
 
         activeNodes.Add(node);
 
@@ -118,6 +119,9 @@ public class NodeManager : MonoBehaviour, INodeManager
 
     public void MissedHit()
     {
+        if(nearestNode == null)
+            return;
+            
         nearestNode.OnMiss();
     }
 

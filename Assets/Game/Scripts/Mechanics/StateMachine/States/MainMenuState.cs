@@ -26,7 +26,7 @@ public class MainMenuState : State
         
         _screen.EditModeButton.onClick.AddListener(() =>
         {
-            _stateMachine.ChangeState<EditModeState>();
+            _stateMachine.ChangeState<PreEditState>();
         });
 
         _screen.SettingButton.onClick.AddListener(() =>

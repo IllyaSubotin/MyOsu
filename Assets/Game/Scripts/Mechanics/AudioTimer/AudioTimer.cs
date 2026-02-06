@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using Zenject;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +30,10 @@ public class AudioTimer : MonoBehaviour , IAudioTimer
             
             if (audioTime < 0f || audioTime > audioSource.clip.length) PauseTimer();;
         }
+    }
+    public void SetAudioClip(AudioClip clip)
+    {
+        audioSource.clip = clip;
     }
 
     public void StartTimer()

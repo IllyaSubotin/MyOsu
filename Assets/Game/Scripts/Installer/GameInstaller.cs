@@ -21,8 +21,11 @@ public class GameInstaller : MonoInstaller
         Container.Bind<IHealthManager>().To<HealthManager>().FromComponentInHierarchy().AsSingle();
         Container.Bind<INodeManager>().To<NodeManager>().FromComponentInHierarchy().AsSingle();
         Container.Bind<IHitDetection>().To<HitDetection>().FromComponentInHierarchy().AsSingle();
-        Container.Bind<IEditModeController>().To<EditModeController>().FromComponentInHierarchy().AsSingle();
         Container.Bind<ILevelChooseController>().To<LevelChooseController>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<IEditLevelChooseController>().To<EditLevelChooseController>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<IEditModeController>().To<EditModeController>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<IMusicImporter>().To<MusicImporter>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<IBackgroundImporter>().To<BackgroundImporter>().FromComponentInHierarchy().AsSingle();
 
         Container.BindInstance(mainMenuScreen).AsSingle();
         Container.BindInstance(levelChooseScreen).AsSingle();

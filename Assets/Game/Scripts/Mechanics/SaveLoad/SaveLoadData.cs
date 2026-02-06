@@ -25,7 +25,10 @@ public class NodeData
     public float xPercent;
     public float yPercent;
 
-    public float spawntime;
+    public float x;
+    public float y;
+
+    public float spawnTime;
     public float approachTime;
     public float size;
 }

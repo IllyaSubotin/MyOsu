@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class EditModeScreen : Screen
 {
     [Header("Canvas")]
-    [SerializeField] public GameObject EditModeCanvas;
+    [SerializeField] public GameObject editModeCanvas;
 
     [Header("Inputs")]
     [SerializeField] public SliderInputSynchronizer approachValue;

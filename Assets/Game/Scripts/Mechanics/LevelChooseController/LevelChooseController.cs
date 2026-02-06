@@ -15,11 +15,16 @@ public class LevelChooseController : MonoBehaviour, ILevelChooseController, IPoi
     [SerializeField] public float dragSensitivity = 1f;
     [SerializeField] public float snapSpeed = 12f;
     
-    public List<LevelItem> levelItems = new List<LevelItem>();
-    public int SelectedIndex {get; set;} 
-    public int currentLevelIndex = 0;
-    public GameObject levelItemPrefab;
-    public Transform parentTransform;
+    [Header("ListLevelItems")]
+    [SerializeField]public List<LevelItem> levelItems = new List<LevelItem>();
+    
+    [Header("NumCentralItem")]
+    [SerializeField]public int currentLevelIndex = 0;
+    
+    [Header("Objects")]
+    [SerializeField]public GameObject levelItemPrefab;
+    [SerializeField]public Transform parentTransform;
+
     private float LevelItemOffsetX = 15f;
     private float LevelItemOffsetY = 100f; 
     private float scrollPosition;

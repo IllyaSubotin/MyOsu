@@ -10,4 +10,9 @@ public class PreEditScreen : Screen
     [SerializeField] public Button chooseLevelButton;
     [SerializeField] public Button chooseSongButton;
     [SerializeField] public Button chooseBackgroundButton;
+
+    [Header("LevelChoosePanel")]
+    [SerializeField] public GameObject levelChoosePanel;
+
+
 }

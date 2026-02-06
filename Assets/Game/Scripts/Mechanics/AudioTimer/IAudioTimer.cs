@@ -10,6 +10,7 @@ public interface IAudioTimer
     float audioTime { get; }
     float audioProgress {get; }
 
+    void SetAudioClip(AudioClip clip);
     void StartTimer();
     void StopTimer();
     void PauseTimer();

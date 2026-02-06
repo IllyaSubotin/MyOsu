@@ -9,6 +9,9 @@ public class GameplayScreen : Screen
     [Header("Canvases")]
     [SerializeField]public GameObject GameplayCanvas;
 
+    [Header("BackgroundImage")]
+    [SerializeField]public Image backgroundImage;
+
     [Header("Buttons")]
     [SerializeField]public Button PauseButton;
     

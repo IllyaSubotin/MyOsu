@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
-using UnityEditor.Search;
+using System.Threading.Tasks;
 
 public class EditModeController : MonoBehaviour, IEditModeController
 {
@@ -12,6 +11,8 @@ public class EditModeController : MonoBehaviour, IEditModeController
     public RectTransform canvasRect;
     public EditNodeView nodePrefab;
     public Transform parentTransform;
+
+    public Image backgroundImage;
 
     public SliderInputSynchronizer approach;
     public SliderInputSynchronizer size;
@@ -22,25 +23,89 @@ public class EditModeController : MonoBehaviour, IEditModeController
     private Stack<EditNodeView> _nodesStack = new Stack<EditNodeView>();
     private Queue<EditNodeView> _nodesQueue = new Queue<EditNodeView>();
 
-    private ISaveLoadManager _saveLoadManager;
     private IAudioTimer _audioTimer;
+    private ISaveLoadManager _saveLoadManager;
+    private IMusicImporter _musicImporter;
+    private IEditLevelChooseController _levelChooseController;
+    private IBackgroundImporter _backgroundImporter;
 
     [Inject]
-    private void Construct(ISaveLoadManager saveLoadManager, IAudioTimer audioTimer)
+    private void Construct(IAudioTimer audioTimer, IMusicImporter musicImporter, IBackgroundImporter backgroundImporter,
+                             IEditLevelChooseController levelChooseController, ISaveLoadManager saveLoadManager)
     {
-        _saveLoadManager = saveLoadManager;
+        _musicImporter = musicImporter;
         _audioTimer = audioTimer;
+        _saveLoadManager = saveLoadManager;
+        _levelChooseController = levelChooseController;
+        _backgroundImporter = backgroundImporter;
     }
 
     private void OnEnable()
     {
+        if(_levelChooseController.isNewLevel)
+        {
+            InitNewBeatmap();
+        }
+        else
+        {
+            InitChooseBeatmap();
+        }
+        
+    }
+
+    private void InitNewBeatmap()
+    {
         beatmapDatas = new BeatmapData();
-        beatmapDatas.beatmapID = 0;//_saveLoadManager.beatmapDatas.Count;
+        beatmapDatas.beatmapID = 0;
         beatmapDatas.beatmapName = "New Beatmap";
         beatmapDatas.nodeInfos = new List<NodeData>();
+        beatmapDatas.audioPath = _musicImporter.MusicPath;
+        beatmapDatas.backgroundImagePath = _backgroundImporter.BackgroundPath;
 
+        backgroundImage.sprite = _backgroundImporter.LoadBackground(_backgroundImporter.BackgroundPath);
+
+        _ = LoadAudioClip(beatmapDatas.audioPath);
+    }
+
+    private void InitChooseBeatmap()
+    {
+        beatmapDatas = new BeatmapData();
+        beatmapDatas = _saveLoadManager.beatmapDatas[_saveLoadManager.currentLevelIndex - 1];
+
+        backgroundImage.sprite = _backgroundImporter.LoadBackground(beatmapDatas.backgroundImagePath);
+
+        _ = LoadAudioClip(beatmapDatas.audioPath);
+        
+        CreateNodesFromSave();
+    }
+
+    private async Task LoadAudioClip(string path)
+    {
+        AudioClip clip = await _musicImporter.LoadAsync(path);
+        _audioTimer.SetAudioClip(clip);
+
+        _audioTimer.StartTimer();
+        
         _audioTimer.OnSpeedChange += OnAudioSpeedChange;
     }
+
+    private void CreateNodesFromSave()
+    {
+        foreach(var nodeInfo in beatmapDatas.nodeInfos)
+        {
+            var newNode = Instantiate(nodePrefab.gameObject, parentTransform);
+            newNode.transform.SetAsFirstSibling();
+
+            EditNodeView nodeView = newNode.GetComponent<EditNodeView>();
+
+            _nodes.Add(nodeView);
+            nodeView.Initialize(nodeInfo.approachTime, nodeInfo.size, new Vector2(nodeInfo.x, nodeInfo.y), nodeInfo.spawnTime);
+            nodeView.gameObject.SetActive(false);
+
+            _nodesQueue.Enqueue(nodeView);
+        }
+    }
+    
 
     private void Update()
     {
@@ -82,14 +147,17 @@ public class EditModeController : MonoBehaviour, IEditModeController
         return false;
     }
 
+   
+
     private void CreateNodeAtPosition(Vector2 position)
     {
-        GameObject nodeObject = Instantiate(nodePrefab.gameObject, parentTransform);
-        nodeObject.transform.SetAsFirstSibling();
+        GameObject newNode = Instantiate(nodePrefab.gameObject, parentTransform);
+        newNode.transform.SetAsFirstSibling();
 
-        EditNodeView nodeView = nodeObject.GetComponent<EditNodeView>();        
+        EditNodeView nodeView = newNode.GetComponent<EditNodeView>();        
 
         _nodes.Add(nodeView);
+
         nodeView.Initialize(approach.value, size.value, position, _audioTimer.audioTime);
         
         if(_audioTimer.audioTime > 0)
@@ -102,7 +170,10 @@ public class EditModeController : MonoBehaviour, IEditModeController
             xPercent = (position.x / canvasRect.rect.width) * 2f,
             yPercent = (position.y / canvasRect.rect.height) * 2f,
 
-            spawntime = _audioTimer.audioTime,
+            x = position.x,
+            y = position.y,
+
+            spawnTime = _audioTimer.audioTime,
             approachTime = approach.value,
             size = size.value,
         });
