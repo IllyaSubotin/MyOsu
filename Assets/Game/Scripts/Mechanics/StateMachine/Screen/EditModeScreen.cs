@@ -23,7 +23,4 @@ public class EditModeScreen : Screen
     [SerializeField] public Button saveButton;
     [SerializeField] public Button loadButton;
     [SerializeField] public Button exitButton;
-
-    [Header("MusicProgressBar")]
-    [SerializeField] public Slider progressBar;
 }

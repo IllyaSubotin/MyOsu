@@ -58,14 +58,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.7137255}
+  m_Color: {r: 0.8792453, g: 0, b: 0, a: 0.7137255}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f3d242adf080a3b4b919d8e72c654694, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cec692dac4503fd45ab17682b17de627, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -168,4 +168,12 @@ MonoBehaviour:
   hitCircleRectTransform: {fileID: 510596705867299638}
   hitCircleImage: {fileID: 7198070379066557534}
   approachCircle: {fileID: 5487273502817844995}
+  approachCircleColor: {fileID: 1027095754089382473}
+  resultSprites:
+  - {fileID: 21300000, guid: f88cd48bb108f4d46ac16da7050f4260, type: 3}
+  - {fileID: 21300000, guid: dbd2d1917c12bad45ba7b6bffafe284d, type: 3}
+  - {fileID: 21300000, guid: 035cb504a14acb3499dc4a8f2e6458fc, type: 3}
+  - {fileID: 21300000, guid: 6308a69576bb24f45a4a5164e957e5bc, type: 3}
+  resultPrefab: {fileID: 7780834147129216241, guid: e2422edfb9495db45990f7cb23c4e47a, type: 3}
   spawnTime: 0
+  duration: 2

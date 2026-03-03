@@ -2,6 +2,7 @@ using Zenject;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 public class GameplayState : State
 {
@@ -48,8 +49,10 @@ public class GameplayState : State
         };
 
         _nodeManager.Initialize(_saveLoadManager.beatmapDatas[_saveLoadManager.currentLevelIndex].nodeInfos);
+
         _nodeManager.onEnded = () =>
         {
+            StatisticSave();
             _stateMachine.ChangeState<MainMenuState>();
         };
     }
@@ -60,6 +63,27 @@ public class GameplayState : State
         _audioTimer.SetAudioClip(clip);
 
         _audioTimer.StartTimer();
+    }
+    
+
+    private void StatisticSave()
+    {
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].maxCombo = _scoreManager.scoreData.maxCombo;
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].highScore = _scoreManager.scoreData.maxScore;
+
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].missedHits = _scoreManager.scoreData.missedHits;
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].okHits = _scoreManager.scoreData.okHits;
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].goodHits = _scoreManager.scoreData.goodHits;
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].perfectHits = _scoreManager.scoreData.perfectHits;
+
+        var maxAccuracyForOneNode = 100 / (_scoreManager.scoreData.missedHits + _scoreManager.scoreData.okHits 
+                                            + _scoreManager.scoreData.goodHits + _scoreManager.scoreData.perfectHits);
+
+        var curAccuracy = _scoreManager.scoreData.perfectHits * maxAccuracyForOneNode 
+                            + _scoreManager.scoreData.goodHits * maxAccuracyForOneNode * 0.66f 
+                                + _scoreManager.scoreData.okHits * maxAccuracyForOneNode * 0.33f;
+        
+        _saveLoadManager.mapStatisticsDatas[_saveLoadManager.currentLevelIndex].bestAccuracy = curAccuracy;
     }
 
 

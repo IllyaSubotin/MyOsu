@@ -10,7 +10,7 @@ public interface INodeManager
     float approachTime { get; }
     
     void Initialize(List<NodeData> nodeInfos);
-    void SucsessfulHit(NodeView node);
+    void SucsessfulHit(NodeView node, HitResult hitResult);
     void MissedHit();
     void OnHit(NodeView node);
 }

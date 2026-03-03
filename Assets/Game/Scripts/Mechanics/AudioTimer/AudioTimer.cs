@@ -11,7 +11,7 @@ public class AudioTimer : MonoBehaviour , IAudioTimer
     public float speedMultiplier {get; private set; } = 1f;
 
     public AudioSource audioSource;
-    public Slider audioProgressBar;
+    public Slider[] audioProgressBars;
 
     private bool isPlaying = false;
     private bool isStarted = false;
@@ -26,7 +26,15 @@ public class AudioTimer : MonoBehaviour , IAudioTimer
             audioTime += Time.deltaTime * speedMultiplier;
             
             audioProgress = audioTime / audioSource.clip.length;
-            audioProgressBar.value = audioProgress;
+
+            foreach(var audioProgressBar in audioProgressBars)
+            {
+                if (audioProgressBar.IsActive())
+                {
+                    audioProgressBar.value = audioProgress;
+                }
+            }
+            
             
             if (audioTime < 0f || audioTime > audioSource.clip.length) PauseTimer();;
         }
@@ -54,7 +62,14 @@ public class AudioTimer : MonoBehaviour , IAudioTimer
 
         audioTime = 0f;
         audioProgress = audioTime / audioSource.clip.length;
-        audioProgressBar.value = audioProgress;
+
+        foreach(var audioProgressBar in audioProgressBars)
+        {
+            if (audioProgressBar.IsActive())
+            {
+                audioProgressBar.value = audioProgress;
+            }
+        }
 
         audioSource.Stop();
     }

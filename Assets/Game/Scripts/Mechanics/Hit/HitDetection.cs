@@ -31,15 +31,15 @@ public class HitDetection : MonoBehaviour, IHitDetection
             switch (hitTimeDelta)
             {
                 case float t when t < perfectHitThreshold:
-                    _nodeManager.SucsessfulHit(node);
+                    _nodeManager.SucsessfulHit(node, HitResult.Perfect);
                     return HitResult.Perfect;
 
                 case float t when t < goodHitThreshold:
-                    _nodeManager.SucsessfulHit(node);
+                    _nodeManager.SucsessfulHit(node, HitResult.Good);
                     return HitResult.Good;
 
                 case float t when t < okHitThreshold:
-                    _nodeManager.SucsessfulHit(node);
+                    _nodeManager.SucsessfulHit(node, HitResult.Ok);
                     return HitResult.Ok;
 
                 default:

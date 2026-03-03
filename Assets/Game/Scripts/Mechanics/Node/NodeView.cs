@@ -11,35 +11,52 @@ public class NodeView : MonoBehaviour
     public Image hitCircleImage;
 
     public GameObject approachCircle;
+    public Image approachCircleColor;
+    public Sprite[] resultSprites;
+
+    public GameObject resultPrefab;
 
     [HideInInspector]public float spawnTime;
+    [HideInInspector]public float duration = 2;
 
     private Tween approachTween;
 
-    public void Initialize(float approachTime, float size, Vector2 position, float spawnTime)
+    public void Initialize(float approachTime, float size, Vector2 position, float spawnTime, Color color)
     {
         hitCircle.transform.localScale = new Vector3(size, size, 1f);
         hitCircleRectTransform.anchoredPosition = position;
         this.spawnTime = spawnTime;
         
+        SetColor(color);
+
+        
         PlaySpawnAnimation();
         PlayApproachAnimation(approachTime);
     }
 
-    public void OnHit()
+    public void SetColor(Color color)
     {
+        hitCircleImage.color = color;
+        approachCircleColor.color = color;
+    }
+
+    public void OnHit(HitResult hitResult)
+    {
+        CreateResult(hitResult);
+
         approachTween.Kill();
         PlayHitPulse();
     }
 
     public void OnMiss()
     {
-        //approachTween?.Kill();
         PlayMissAnimation();
     }
 
     public void OnFail()
     {
+        CreateResult(HitResult.Miss);
+
         approachTween?.Kill();
         PlayFailAnimation();
     }
@@ -104,4 +121,15 @@ public class NodeView : MonoBehaviour
             hitCircle.gameObject.SetActive(false);
         });
     }
+
+
+    private void CreateResult(HitResult hitResult)
+    {
+        var resultPos = new Vector3(transform.position.x, transform.position.y + 20f, transform.position.z);
+
+        GameObject result = Instantiate(resultPrefab, resultPos, transform.rotation, transform.parent);
+
+        result.GetComponent<NodeResult>().ResultShow(hitResult, resultSprites, duration);
+    }
+    
 }

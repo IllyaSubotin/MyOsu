@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HealthManager : MonoBehaviour, IHealthManager
 {
+    public Slider hpSlider;
     public float currentHealth { get; private set; }
     public int maxHealth = 100;
 
@@ -17,6 +19,8 @@ public class HealthManager : MonoBehaviour, IHealthManager
         if (isPaused) return;
         
         currentHealth -= 2 * Time.deltaTime;
+        
+        hpSlider.value = currentHealth / maxHealth * 100;
 
         EndCheck();
     }
@@ -39,7 +43,7 @@ public class HealthManager : MonoBehaviour, IHealthManager
                 currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
                 break;
             case HitResult.Miss:
-                currentHealth -= 15;
+                currentHealth -= 10;
                 currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
                 EndCheck();
                 break;

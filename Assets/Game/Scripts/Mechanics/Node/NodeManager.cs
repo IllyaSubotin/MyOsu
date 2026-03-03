@@ -6,6 +6,9 @@ using Zenject;
 
 public class NodeManager : MonoBehaviour, INodeManager
 {
+    
+    [SerializeField] private Color[] colors;
+
     public List<NodeView> inactiveNodes = new List<NodeView>();
     public RectTransform canvasRect;
     public NodeView nodePrefab;
@@ -13,8 +16,11 @@ public class NodeManager : MonoBehaviour, INodeManager
     public NodeView nearestNode{ get;  private set; }
     public Action onEnded{ get; set; }
 
+
+
     public float approachTime { get; private set; } = 1f;
     private float tolerance = 0.01f; 
+    private int colorIndex = 0;
 
     private List<NodeData> nodeInfos = new List<NodeData>();
     private List<NodeView> activeNodes = new List<NodeView>();
@@ -25,8 +31,7 @@ public class NodeManager : MonoBehaviour, INodeManager
     private IHealthManager _healthManager;
 
     [Inject]
-    private void Construct(IAudioTimer audioTimer, IScoreManager scoreManager, IHitDetection hitDetection, 
-                            IHealthManager healthManager)
+    private void Construct(IAudioTimer audioTimer, IScoreManager scoreManager, IHitDetection hitDetection, IHealthManager healthManager)
     {
         _audioTimer = audioTimer;
         _scoreManager = scoreManager;   
@@ -39,6 +44,8 @@ public class NodeManager : MonoBehaviour, INodeManager
     {
         if(nodeInfos.Count == 0 && activeNodes.Count == 0)
         {
+            
+
             onEnded?.Invoke();
             return; 
         }
@@ -86,7 +93,9 @@ public class NodeManager : MonoBehaviour, INodeManager
         node.gameObject.SetActive(true);    
         node.gameObject.transform.SetAsFirstSibling();
         node.Initialize(approachTime, 1f, new Vector2((info.xPercent - 0.5f) * canvasRect.rect.width, 
-                                                        (info.yPercent - 0.5f) * canvasRect.rect.height), info.spawnTime); 
+                                                        (info.yPercent - 0.5f) * canvasRect.rect.height), 
+                                                            info.spawnTime, colors[colorIndex]); 
+        colorIndex = (colorIndex + 1) % colors.Length;
 
         activeNodes.Add(node);
 
@@ -107,9 +116,9 @@ public class NodeManager : MonoBehaviour, INodeManager
         _healthManager.UpdateHealth(hitResult);
     }    
 
-    public void SucsessfulHit(NodeView node)
+    public void SucsessfulHit(NodeView node, HitResult hitResult)
     {
-        node.OnHit();
+        node.OnHit(hitResult);
         activeNodes.Remove(node);
         inactiveNodes.Add(node);
 
@@ -132,7 +141,8 @@ public class NodeManager : MonoBehaviour, INodeManager
         inactiveNodes.Add(node);
 
         nearestNode = activeNodes.Count > 0 ? activeNodes[0] : null;
-        Debug.Log("Missed node at time: " + _audioTimer.audioTime);
+
+        _healthManager.UpdateHealth(HitResult.Miss);
     }   
 
 
